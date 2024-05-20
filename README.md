@@ -1,6 +1,4 @@
-**Project report:**
-
-**Optimal placement of the maximum number of dominoes on a square chessboard**
+# Project report: **Optimal placement of the maximum number of dominoes on a square chessboard**
 
 Automated Reasoning Course
 
@@ -8,11 +6,11 @@ Automated Reasoning Course
 
 University of Udine
 
-<a name="_page2_x56.69_y48.72"></a>**Problem Definition**
+## Problem Definition
 
 The focus of my project has been the optimal placement of domino tiles on a square chessboard of size n × n. The challenge is to arrange a given set of tiles, each occupying three consecutive cells, without any overlapping or extending beyond the borders of the chessboard. The goal is to maximize the number of placed tiles, ensuring that each tile is adjacent only to tiles with the same value in contiguous cells. Moreover, the range of values for the tiles exceeds the traditional limit of 0 to 6, reaching up to a maximum value k, variable depending on the instance. To address this complexity, I have developed two models: one using MiniZinc, based on constraint programming, and the other through ASP Clingo.
 
-<a name="_page2_x56.69_y174.15"></a>**How the Problem Was Addressed**
+### How the Problem Was Addressed
 
 The approach adopted to tackle the problem was to explore the space of possible solutions, evaluating tile placement configurations and trying to respect the following limits:
 
@@ -25,11 +23,9 @@ The approach adopted to tackle the problem was to explore the space of possible 
 
 The objective is to select the configuration that allows maximizing the number of inserted tiles, using the models’ capacity to navigate effectively through the entire solution space.
 
-<a name="_page2_x56.69_y369.87"></a>**Description of Tests**
+### Description of Tests
 
-To evaluate the performance of the MiniZinc and Clingo models, I randomly generated 10 batches of 10 problem instances each. To do this, I used a Python script called **create\_input.py** which places inside the **/input** directory 10 ".txt" files, each containing 10 problem instances variable by identifier, difficulty level (easy, medium, hard), set of
-
-tiles, and chessboard size. Inside each file, we find:
+To evaluate the performance of the MiniZinc and Clingo models, I randomly generated 10 batches of 10 problem instances each. To do this, I used a Python script called **create\_input.py** which places inside the **/input** directory 10 ".txt" files, each containing 10 problem instances variable by identifier, difficulty level (easy, medium, hard), set of tiles, and chessboard size. Inside each file, we find:
 
 - Four easy instances that serve to test the models’ capabilities with basic configurations and small-sized chessboards.
 - Four medium instances that increase complexity, both in the number of tiles and in the size of the chessboard, requiring a more in-depth exploration of the solution space.
@@ -37,7 +33,7 @@ tiles, and chessboard size. Inside each file, we find:
 
 Each instance is defined in an input file structured as follows: **id**, **difficulty** , **tiles** , **n**, where **id** is the identifier of the instance, the **difficulty** indicates the level of complexity, the tiles are listed in an array representing the set available for the problem, and **n** denotes the size of the chessboard.
 
-<a name="_page2_x56.69_y584.59"></a>**Minizinc**
+## Minizinc
 
 The first approach tried was with the use of Minizinc. To pass instances to the various models, a well-defined syntax was used, which allowed to transfer each instance to the program, avoiding the need for multiple versions of the code. The structure adopted to communicate the instances to MiniZinc includes:
 
@@ -49,7 +45,9 @@ The first approach tried was with the use of Minizinc. To pass instances to the 
 
 To facilitate the management and execution of the different problem instances without having to manually adapt the program for each specific configuration, the MiniZinc command with a time limit for execution was employed:
 
-**minizinc –time-limit 300000 program.mzn input.dzn**
+```bash
+minizinc –time-limit 300000 program.mzn input.dzn
+```
 
 This command runs the MiniZinc model **program.mzn** using the data specified in **input.dzn** , imposing a time limit of 300 seconds (5 minutes) on the search for a solution. The time limit serves to prevent prolonged executions on instances of particular complexity.
 
@@ -59,7 +57,7 @@ To further optimize the workflow, I developed a Python script, **solve\_minizinc
 - Collecting solutions from different instances into a CSV file, ready for further analysis.
 - Generating a visual representation of the solutions, creating images of the board with the tiles positioned.
 
-<a name="_page3_x56.69_y277.86"></a>**Tile Representation**
+## Tile Representation
 
 To represent the placement of domino tiles, I introduced decision variables to represent the positions of the tiles on the game table, as well as categorical variables to define the orientation and state of each tile. The variables used are as follows:
 
@@ -70,11 +68,11 @@ To represent the placement of domino tiles, I introduced decision variables to r
 
 These variables ensure that each tile is uniquely identified by a pair of coordinates (X, Y), has a single orientation (horizontal or vertical), a defined state (inserted or not inserted), and a specific version (normal or mirror).
 
-<a name="_page3_x56.69_y473.57"></a>**Constraints for Tile Placement**
+## Constraints for Tile Placement
 
 The correct placement of domino tiles on a board is guaranteed by a set of constraints that I implemented in the MiniZinc code.
 
-<a name="_page3_x56.69_y531.81"></a>**Constraints to Prevent Tiles from Overlapping and Exiting the Board** These constraints ensure that tiles do not overlap and stay within the game board’s limits.
+### **Constraints to Prevent Tiles from Overlapping and Exiting the Board** These constraints ensure that tiles do not overlap and stay within the game board’s limits.
 
 - **Non-Overlap of Tiles with the Same Orientation** :
 - Horizontal: Tiles with the same horizontal orientation do not overlap if they occupy different rows (**posY[i] != posY[j]** ) or if, even though they are on the same row, they are sufficiently spaced apart (**posX[i] + 2 < posX[j]** or **posX[j] + 2 < posX[i]** ).
@@ -89,7 +87,7 @@ The correct placement of domino tiles on a board is guaranteed by a set of const
 
 Figure 1: Visual representation of base constraints.
 
-<a name="_page4_x457.25_y410.83"></a><a name="_page4_x56.69_y464.57"></a>**Constraints to Ensure Each Pair of Tiles is Correctly Positioned**
+### **Constraints to Ensure Each Pair of Tiles is Correctly Positioned**
 
 Every pair of tiles ( *i*,*j*) must satisfy one of the following cases:
 
@@ -120,9 +118,9 @@ Figure 2: Visual representation of possible secenaries for case 1A.
 
 ![](Aspose.Words.8d93dda9-9b38-417b-b785-08f08a1029c4.003.png)
 
-<a name="_page5_x517.08_y299.96"></a>Figure 3: Further visual representation of possible secenaries for case 1.
+Figure 3: Further visual representation of possible secenaries for case 1.
 
-<a name="_page5_x544.50_y465.06"></a>In each scenario, for every pair of distinct vertical tiles (i and j), one of the described configurations must be satisfied, thus ensuring correct positioning that respects the rules of dominoes and gameplay restrictions.
+In each scenario, for every pair of distinct vertical tiles (i and j), one of the described configurations must be satisfied, thus ensuring correct positioning that respects the rules of dominoes and gameplay restrictions.
 
 **CASE 2: tiles i and j are both horizontal**
 
@@ -207,7 +205,7 @@ Finally, I also tested another solver: Chuffed. It was used only on the basic va
 
 Each model was tested on 10 groups of input (containing 10 different problem instances each): having obtained these results, it was then possible to make global evaluations on how each model behaves.
 
-<a name="_page8_x56.69_y593.94"></a>**ASP Clingo Model**
+## **ASP Clingo Model**
 
 The second approach adopted to address the problem of the optimal placement of domino tiles on a chessboard utilizes the Clingo solver, a powerful tool based on Answer Set Programming (ASP). Unlike constraint programming used in MiniZinc, Clingo allows describing the problem in terms of logical rules and constraints that must be simultaneously satisfied.
 
@@ -217,37 +215,43 @@ the problem’s constraints.
 
 To execute the code, use the clingo command with the time limit option, for example:
 
+```bash
 **clingo –time-limit=300 clingo\_domino.lp input\_clingo.lp.**
+```
 
 The file **clingo\_domino.lp** contains Clingo’s ASP code, while **input\_clingo.lp** is the file with the instances of the specific problem to be solved. As with minizinc, a Python script called **solve\_clingo.py** has been chosen, which transforms problem instances defined in an **input.txt** file into the format accepted by Clingo, executes the solver on these instances, and subsequently collects the results. As with MiniZinc, the script saves the outputs of the executions in text files, creates images representing the solutions found for each chessboard, and compiles a CSV file
 
 with relevant data from each execution, facilitating comparative performance analysis.
 
-<a name="_page9_x56.69_y176.24"></a>**Tile Representation**
+### **Tile Representation**
 
 The core of this model is characterized by the **pos\_tile** rule, which determines the ways tiles can be placed. For each tile, uniquely identified by its identifier **T** and values **Val1** , **Val2** , **Val3** , the model explores all possible placement configurations following domino rules and the constraints imposed by the chessboard’s size.
 
+```bash
 **1 { pos\_tile(T, I, X, Y, O, 0, Val1, Val2, Val3) : position(X, Y), orientation(O), inserted(I) ; pos\_tile(T, I, X, Y, O, 1, Val3, Val2, Val1) : position(X, Y), orientation(O), inserted(I) } 1 :- tile(T, Val1, Val2, Val3).**
+```
 
 This rule specifies that for each tile **T**, there exists a unique valid configuration determining its position **(X, Y)** on the grid, its orientation **O** (0 for horizontal, 1 for vertical), and whether it has been selected to be part of the solution ( **inserted(1)** ) or not ( **inserted(0)** ). The possibility of placing each tile in a mirror image is contemplated, allowing to choose between the original arrangement of values ( **0, Val1, Val2, Val3** ) and the mirror arrangement (**1, Val3, Val2, Val1** ).
 
 Through the syntax **{...} 1** , the program ensures that only one of the possible configurations is selected for each tile, ensuring a consistent and unique assignment.
 
-<a name="_page9_x56.69_y383.91"></a>**Problem Solving with Clingo**
+### **Problem Solving with Clingo**
 
 In the Clingo model, the adopted approach uses logical rules to outline sets of permissible solutions. This methodology focuses on the automatic generation of solutions that simultaneously satisfy all imposed constraints.
 
-<a name="_page9_x56.69_y442.14"></a>**Placement and Overlapping Constraints**
+#### **Placement and Overlapping Constraints**
 
 The first part of the program ensures to prevent overlapping between tiles and ensures they remain confined to the chessboard limits. These constraints are expressed through logical rules that, if violated, render the proposed set of solutions inadmissible.
 
 - **Chessboard Limits:** To ensure that tiles are placed within the chessboard boundaries, specific constraints are introduced based on orientation. For horizontal tiles, it is prevented from extending beyond the right edge, and for vertical tiles from exceeding the bottom limit. These constraints are formalized as follows:
 
+```bash
 **:- pos\_tile(T, 1, X, Y, 0, \_, \_, \_, \_), size(D), X+2 > D. :- pos\_tile(T, 1, X, Y, 1, \_, \_, \_, \_), size(D), Y+2 > D.**
+```
 
 - **Preventing Overlap:** Restrictions are imposed to prevent tiles from overlapping, considering both tiles of the same orientation and combinations of horizontal and vertical tiles. For example, two horizontal tiles cannot share the same row if the distance between them is less than the length of a tile. This logic is also extended to interactions between horizontal and vertical tiles, preventing configurations in which they intersect.
 
-<a name="_page9_x56.69_y641.85"></a>**Managing Adjacent Tiles**
+#### **Managing Adjacent Tiles**
 
 The model implements detailed rules to manage adjacency between tiles, which is essential to adhere to the fundamental rules of domino:
 
@@ -255,11 +259,11 @@ The model implements detailed rules to manage adjacency between tiles, which is 
 - **Adjacent Vertical Tiles:** Similarly, for vertical tiles, the code ensures that tiles stacked vertically have matching values in the cells that touch.
 - **Interactions between Horizontal and Vertical Tiles:** These rules extend to cover cases where horizontal and vertical tiles touch, imposing that the values in the contact cells be equal.
 
-<a name="_page10_x56.69_y122.44"></a>**Implementation and Constraints in Clingo**
+#### **Implementation and Constraints in Clingo**
 
 The formulation of these constraints in Clingo leverages the use of rules that explicitly exclude invalid configurations (**:-**). This approach allows for a clear and concise definition of the conditions under which tiles can be placed, ensuring the generation of solutions that respect both the physical limits of the chessboard and the rules of the game of domino.
 
-<a name="_page10_x56.69_y205.66"></a>**Results**
+## **Results**
 
 Using the Python scripts **solve\_minizinc.py** and **solve\_clingo.py** , it was possible to automate the solving process for the 10 problem instances provided. Each model was tested on each instance contained in the **/input** folder.
 
@@ -286,7 +290,7 @@ Several key points emerge from the analysis:
 - Analyzing the impact of chessboard size, a similar dynamic is observed: Clingo and the Gecode model based on the "position" strategy show difficulty already with chessboards larger than 5x5. In contrast, the other models begin to show slowdowns only with chessboards larger than 10x10 in size.
 - Of all the solvers examined, Chuffed emerges as the best performing, managing to optimize search and complete proposed problems faster than both the other models implemented in MiniZinc and in comparison with Clingo. Its ability to maintain low resolution times regardless of the difficulty of the problem positions it as the solver of choice in the analysis conducted.
 
-<a name="_page13_x56.69_y589.95"></a>**Further Considerations**
+### **Further Considerations**
 
 Given the excellent performance of the model executed with the Chuffed solver, curiosity arose to explore its limits. To do this, significantly more complex problem instances were generated compared to the initial ones. The goal was to test the robustness and efficiency of the solver against greater challenges.
 

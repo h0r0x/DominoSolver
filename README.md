@@ -8,32 +8,6 @@ Automated Reasoning Course
 
 University of Udine
 
-**Contents**
-
-[**Problem Definition](#_page2_x56.69_y48.72) **2 [How the Problem Was Addressed . ](#_page2_x56.69_y174.15)**. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2        [Description of Tests ](#_page2_x56.69_y369.87). . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
-
-[**Minizinc](#_page2_x56.69_y584.59) **2** Tile Representation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3        Constraints for Tile Placement . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3         Constraints to Prevent Tiles from Overlapping and Exiting the Board . . . . . . . . . . . . . . . . . 3
-
-Constraints to Ensure Each Pair of Tiles is Correctly Positioned . . . . . . . . . . . . . . . . . . . . 4 Search Strategies . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
-
-[**ASP Clingo Model](#_page8_x56.69_y593.94) **8** Tile Representation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9        Problem Solving with Clingo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9       Placement and Overlapping Constraints . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
-
-Managing Adjacent Tiles . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9 Implementation and Constraints in Clingo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
-
-[**Results](#_page10_x56.69_y205.66) **10 [Further Considerations](#_page13_x56.69_y589.95) 13 [Conclusions](#_page14_x56.69_y283.58) 14**
-
-**List of Figures**
-
-1  Visual representation of base constraints. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
-1  Visual representation of possible secenaries for case 1A. . . . . . . . . . . . . . . . . . . . . . . . . . 5
-1  Further visual representation of possible secenaries for case 1. . . . . . . . . . . . . . . . . . . . . . . 5
-1  Visual representation of possible secenaries for case 3. . . . . . . . . . . . . . . . . . . . . . . . . . . 7
-1  Analysis of execution time by model and difficulty. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
-1  Impact of chessboard size on execution time. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
-1  Influence of the number of tiles on execution time. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
-1  Distribution of execution time among different models. . . . . . . . . . . . . . . . . . . . . . . . . . . 13
-1  Average execution times with much more difficult instances (with a very high number of tiles to insert/evaluate). . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
-
 <a name="_page2_x56.69_y48.72"></a>**Problem Definition**
 
 The focus of my project has been the optimal placement of domino tiles on a square chessboard of size n × n. The challenge is to arrange a given set of tiles, each occupying three consecutive cells, without any overlapping or extending beyond the borders of the chessboard. The goal is to maximize the number of placed tiles, ensuring that each tile is adjacent only to tiles with the same value in contiguous cells. Moreover, the range of values for the tiles exceeds the traditional limit of 0 to 6, reaching up to a maximum value k, variable depending on the instance. To address this complexity, I have developed two models: one using MiniZinc, based on constraint programming, and the other through ASP Clingo.
